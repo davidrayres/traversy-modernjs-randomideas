@@ -1,14 +1,25 @@
+import path from 'path'
 import express from 'express'
+import cors from 'cors'
 import dotenv from 'dotenv'
 import ideasRouter from './routes/ideas.js'
 import connectDB from './config/db.js'
 
+const __dirname = path.resolve()
 const app = express()
 dotenv.config()
 connectDB()
 
-app.use(express.json()) //allows express to parse json data
-app.use(express.urlencoded({extended: false})) //allows express to parse form data
+//Middleware
+app.use(express.static(path.join(__dirname, 'public'))) //static folder
+app.use(express.json()) //parse json data
+app.use(
+  cors({
+    origin: ['http://localhost:3000', 'http://localhost:5000'],
+    credentials: true,
+  })
+)
+app.use(express.urlencoded({extended: false})) //parse form data
 app.use('/api/ideas', ideasRouter)
 
 app.get('/', (req, res) => {
